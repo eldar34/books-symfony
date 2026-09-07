@@ -1,0 +1,97 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Список авторов{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Авторы</h1>
+    {% if app.user %}
+        <a href="{{ path('app_author_new') }}" class="btn btn-primary">Добавить автора</a>
+    {% endif %}
+</div>
+
+{% if authors is empty %}
+    <div class="card p-5 text-center text-muted">
+        <h3>Авторов пока нет в базе данных.</h3>
+    </div>
+{% else %}
+    <div class="card shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-striped vertical-align-middle mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th style="width: 10%">ID</th>
+                        <th>ФИО Автора</th>
+                        <th style="width: 20%">Книг в базе</th>
+                        <th style="width: 20px">Подписчиков</th>
+                        {% if app.user %}
+                            <th style="width: 20%" class="text-end">Действия</th>
+                        {% endif %}
+                    </tr>
+                </thead>
+                <tbody>
+                {% for author in authors %}
+                    <tr>
+                        <td>{{ author.id }}</td>
+                        <td>
+                            <a href="{{ path('app_author_show', {'id': author.id}) }}" class="text-decoration-none text-dark fw-bold-hover">
+                                {{ author.fullName }}
+                            </a>
+                        </td>
+                        <td><span class="badge bg-secondary">{{ author.books|length }}</span></td>
+                        <td><span class="badge bg-info text-dark">{{ author.subscribers|length }}</span></td>
+                        {% if app.user %}
+                            <td class="text-end">
+                                <div class="d-flex gap-2 justify-content-end">
+                                    <a href="{{ path('app_author_edit', {'id': author.id}) }}" class="btn btn-sm btn-outline-warning">Редактировать</a>
+                                    
+                                    <form method="post" action="{{ path('app_author_delete', {'id': author.id}) }}" onsubmit="return confirm('Вы уверены? Это также удалит его подписчиков! Книги останутся.');" class="d-inline">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ author.id) }}">
+                                        <button class="btn btn-sm btn-outline-danger">Удалить</button>
+                                    </form>
+                                </div>
+                            </td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    {# Блок пагинации Bootstrap #}
+    {% if pages_count > 1 %}
+        <nav aria-label="Навигация по страницам" class="mt-4 mb-3">
+            <ul class="pagination justify-content-center">
+                
+                {# Кнопка "Назад" #}
+                <li class="page-item {{ current_page == 1 ? 'disabled' }}">
+                    <a class="page-link" href="{{ path('app_author_index', {'page': current_page - 1}) }}" aria-label="Назад">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+
+                {# Цикл по страницам #}
+                {% for page in 1..pages_count %}
+                    <li class="page-item {{ page == current_page ? 'active' }}">
+                        <a class="page-link" href="{{ path('app_author_index', {'page': page}) }}">{{ page }}</a>
+                    </li>
+                {% endfor %}
+
+                {# Кнопка "Вперед" #}
+                <li class="page-item {{ current_page == pages_count ? 'disabled' }}">
+                    <a class="page-link" href="{{ path('app_author_index', {'page': current_page + 1}) }}" aria-label="Вперед">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+                
+            </ul>
+        </nav>
+    {% endif %}
+    
+    {# Текст счетчика #}
+    <div class="text-center text-muted small mt-2 mb-5">
+        Всего авторов в базе: {{ total_items }}
+    </div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,76 @@
+{# templates/book_crud/new.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Новая книга{% endblock %}
+
+{% block body %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm p-4">
+            <h2 class="mb-4">Добавление новой книги</h2>
+
+            {{ form_start(form) }}
+                {% if not form.vars.valid %}
+                    <div class="alert alert-danger pb-0">
+                        <strong>Пожалуйста, исправьте следующие ошибки:</strong>
+                        {{ form_errors(form) }}
+                        <ul>
+                            {% for child in form.children %}
+                                {% for error in child.vars.errors %}
+                                    <li>{{ child.vars.label ?: child.vars.name }}: {{ error.message }}</li>
+                                {% endfor %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+                <div class="mb-3">
+                    {{ form_label(form.title, null, {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.title, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(form.title, {'attr': {'class': 'text-danger small'}}) }}
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        {{ form_label(form.releaseYear, null, {'label_attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(form.releaseYear, {'attr': {'class': 'form-control'}}) }}
+                        {{ form_errors(form.releaseYear, {'attr': {'class': 'text-danger small'}}) }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        {{ form_label(form.isbn, null, {'label_attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(form.isbn, {'attr': {'class': 'form-control', 'placeholder': '978-X-XXXX-XXXX-X'}}) }}
+                        {{ form_errors(form.isbn, {'attr': {'class': 'text-danger small'}}) }}
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    {{ form_label(form.description, null, {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.description, {'attr': {'class': 'form-control', 'rows': '4'}}) }}
+                </div>
+
+                <div class="mb-3 card p-3 bg-light">
+                    <label class="form-label d-block fw-bold">Авторы:</label>
+                    <div class="row row-cols-2">
+                        {% for child in form.authors %}
+                            <div class="col form-check">
+                                {{ form_widget(child, {'attr': {'class': 'form-check-input'}}) }}
+                                {{ form_label(child, null, {'label_attr': {'class': 'form-check-label'}}) }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                    {{ form_errors(form.authors, {'attr': {'class': 'text-danger small'}}) }}
+                </div>
+
+                <div class="mb-4">
+                    {{ form_label(form.coverImageFile, null, {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.coverImageFile, {'attr': {'class': 'form-control'}}) }}
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <a href="{{ path('app_book_index') }}" class="btn btn-outline-secondary">Назад к списку</a>
+                    <button type="submit" class="btn btn-success px-4">Сохранить книгу</button>
+                </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+</div>
+{% endblock %}

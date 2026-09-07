@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Авторизация{% endblock %}
+
+{% block body %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-5">
+        <div class="card shadow-sm p-4">
+            <h2 class="text-center mb-4">Вход в систему</h2>
+
+            {% if error %}
+                <div class="alert alert-danger">
+                    {{ error.messageKey|trans(error.messageData, 'security') }}
+                </div>
+            {% endif %}
+
+            <form action="{{ path('app_login') }}" method="post">
+                <div class="mb-3">
+                    <label for="inputEmail" class="form-label">Email</label>
+                    <input type="email" value="{{ last_username }}" name="_email" id="inputEmail" class="form-control" autocomplete="email" required autofocus placeholder="example@mail.com">
+                </div>
+
+                <div class="mb-4">
+                    <label for="inputPassword" class="form-label">Password</label>
+                    <input type="password" name="_password" id="inputPassword" class="form-control" autocomplete="current-password" required>
+                </div>
+
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+                <button type="submit" class="btn btn-primary w-100 py-2 mb-3">Войти</button>
+                
+                {# Блок с подсказкой для тестового входа #}
+                <div class="alert alert-info text-center small mb-0 py-2">
+                    💡 Вы можете авторизоваться под этими данными:<br>
+                    <strong>Email:</strong> <code>admin@example.com</code><br>
+                    <strong>Password:</strong> <code>adminTs12T72</code>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

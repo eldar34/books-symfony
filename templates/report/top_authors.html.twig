@@ -1,0 +1,71 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Отчет: Топ-10 авторов за {{ current_year }} год{% endblock %}
+
+{% block body %}
+<div class="card shadow-sm p-4 mb-5">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+        <div>
+            <h1 class="h2 mb-1">Рейтинг авторов</h1>
+            <p class="text-muted mb-0">Топ-10 авторов по количеству выпущенных книг за указанный год</p>
+        </div>
+
+        {# Форма фильтрации по году #}
+        <form method="get" action="{{ path('app_report_top_authors') }}" class="d-flex gap-2 align-items-center">
+            <label for="yearSelect" class="form-label mb-0 text-nowrap">Выберите год:</label>
+            <select name="year" id="yearSelect" class="form-select" onchange="this.form.submit()" style="width: 120px;">
+                {% for year in ("now"|date('Y'))..2000 %}
+                    <option value="{{ year }}" {{ year == current_year ? 'selected' }}>{{ year }}</option>
+                {% endfor %}
+            </select>
+            <noscript>
+                <button type="submit" class="btn btn-secondary">Показать</button>
+            </noscript>
+        </form>
+    </div>
+
+    {% if results is empty %}
+        <div class="alert alert-info text-center py-5 mb-0" role="alert">
+            <h4 class="alert-heading">Данные отсутствуют</h4>
+            <p class="mb-0">За {{ current_year }} год в каталоге не найдено ни одной выпущенной книги.</p>
+        </div>
+    {% else %}
+        <div class="table-responsive rounded border">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th style="width: 8%" class="text-center">Место</th>
+                        <th>ФИО Автора</th>
+                        <th style="width: 25%" class="text-center">Количество книг за {{ current_year }} г.</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for row in results %}
+                    <tr>
+                        <td class="text-center fw-bold">
+                            {% if loop.index == 1 %}
+                                🥇 <span class="text-warning">1</span>
+                            {% elseif loop.index == 2 %}
+                                🥈 <span class="text-secondary">2</span>
+                            {% elseif loop.index == 3 %}
+                                🥉 <span class="text-danger">3</span>
+                            {% else %}
+                                {{ loop.index }}
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="fs-6 fw-semibold">{{ row.fullName }}</span>
+                        </td>
+                        <td class="text-center">
+                            <span class="badge bg-primary px-3 py-2 fs-6 rounded-pill">
+                                {{ row.bookCount }}
+                            </span>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
